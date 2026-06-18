@@ -1,0 +1,30 @@
+# Portable Maven
+maven/
+
+# Java build target
+**/target/
+*.jar
+*.war
+*.ear
+
+# Node modules & build artifacts
+**/node_modules/
+**/dist/
+.eslintcache
+
+# IDEs and editors
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.classpath
+.project
+.settings/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db

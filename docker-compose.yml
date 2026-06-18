@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: rv-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: random_vision
+      MYSQL_USER: rv_user
+      MYSQL_PASSWORD: rv_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u$$MYSQL_USER", "-p$$MYSQL_PASSWORD"]
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    container_name: rv-backend
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/random_vision?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=rv_user
+      - SPRING_DATASOURCE_PASSWORD=rv_password
+      - SPRING_MAIL_HOST=maildev
+      - SPRING_MAIL_PORT=1025
+      - SPRING_MAIL_USERNAME=
+      - SPRING_MAIL_PASSWORD=
+      - JWT_SECRET=5J2k9sD2j8sK8sL2mNsPqWzX1c2v3b4n5m6q7w8e9r0tYUIOPAsDfGhJkLzXc
+      - JWT_EXPIRATION_MS=3600000
+      - JWT_REFRESH_EXPIRATION_MS=864000000
+      - UPLOAD_DIR=/app/uploads
+    volumes:
+      - upload_data:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: rv-frontend
+    restart: always
+
+  nginx:
+    image: nginx:alpine
+    container_name: rv-nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - frontend
+
+  maildev:
+    image: maildev/maildev
+    container_name: rv-maildev
+    restart: always
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
+volumes:
+  db_data:
+  upload_data:

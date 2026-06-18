@@ -1,0 +1,106 @@
+-- Create users table
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    profile_image_path VARCHAR(255) NULL,
+    enabled BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create roles table
+CREATE TABLE IF NOT EXISTS roles (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(20) NOT NULL UNIQUE
+);
+
+-- Create user_roles join table
+CREATE TABLE IF NOT EXISTS user_roles (
+    user_id BIGINT NOT NULL,
+    role_id BIGINT NOT NULL,
+    PRIMARY KEY (user_id, role_id),
+    CONSTRAINT fk_user_roles_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_user_roles_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+);
+
+-- Create quotes table
+CREATE TABLE IF NOT EXISTS quotes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    quote_text TEXT NOT NULL,
+    author VARCHAR(100) DEFAULT 'Unknown',
+    category VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create saved_quotes table
+CREATE TABLE IF NOT EXISTS saved_quotes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    quote_id BIGINT NOT NULL,
+    saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_saved_quotes_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_saved_quotes_quote FOREIGN KEY (quote_id) REFERENCES quotes(id) ON DELETE CASCADE,
+    CONSTRAINT uq_user_quote UNIQUE (user_id, quote_id)
+);
+
+-- Create verification_tokens table
+CREATE TABLE IF NOT EXISTS verification_tokens (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    user_id BIGINT NOT NULL,
+    expiry_date TIMESTAMP NOT NULL,
+    CONSTRAINT fk_verification_tokens_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Create refresh_tokens table
+CREATE TABLE IF NOT EXISTS refresh_tokens (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    user_id BIGINT NOT NULL,
+    expiry_date TIMESTAMP NOT NULL,
+    CONSTRAINT fk_refresh_tokens_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Create user_activity_logs table
+CREATE TABLE IF NOT EXISTS user_activity_logs (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    action VARCHAR(255) NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_activity_logs_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Seed Roles
+INSERT INTO roles (name) VALUES ('ROLE_USER');
+INSERT INTO roles (name) VALUES ('ROLE_ADMIN');
+
+-- Seed Users (Password is 'password123' BCrypt hashed)
+-- BCrypt: $2a$10$8.ZpG2D6zW9E2YlFQsR7feq4Hk7215U2H8W/uEpl6p1cSwYp3w7bC
+INSERT INTO users (username, email, password, enabled) VALUES 
+('admin', 'admin@randomvision.com', '$2a$10$8.ZpG2D6zW9E2YlFQsR7feq4Hk7215U2H8W/uEpl6p1cSwYp3w7bC', TRUE),
+('user', 'user@randomvision.com', '$2a$10$8.ZpG2D6zW9E2YlFQsR7feq4Hk7215U2H8W/uEpl6p1cSwYp3w7bC', TRUE);
+
+-- Map Roles to Users (User 1 is Admin, User 2 is User)
+INSERT INTO user_roles (user_id, role_id) VALUES 
+(1, 1), -- admin has ROLE_USER
+(1, 2), -- admin has ROLE_ADMIN
+(2, 1); -- user has ROLE_USER
+
+-- Seed Quotes
+INSERT INTO quotes (quote_text, author, category) VALUES
+('The only way to do great work is to love what you do.', 'Steve Jobs', 'Motivation'),
+('Believe you can and you''re halfway there.', 'Theodore Roosevelt', 'Motivation'),
+('It does not matter how slowly you go as long as you do not stop.', 'Confucius', 'Wisdom'),
+('The best way to predict the future is to create it.', 'Peter Drucker', 'Inspiration'),
+('Do what you can, with what you have, where you are.', 'Theodore Roosevelt', 'Inspiration'),
+('The journey of a thousand miles begins with one step.', 'Lao Tzu', 'Wisdom'),
+('Happiness is not something ready made. It comes from your own actions.', 'Dalai Lama', 'Wisdom'),
+('Success is not final, failure is not fatal: it is the courage to continue that counts.', 'Winston Churchill', 'Courage'),
+('What lies behind us and what lies before us are tiny matters compared to what lies within us.', 'Ralph Waldo Emerson', 'Inspiration'),
+('You must be the change you wish to see in the world.', 'Mahatma Gandhi', 'Wisdom'),
+('Darkness cannot drive out darkness; only light can do that. Hate cannot drive out hate; only love can do that.', 'Martin Luther King Jr.', 'Love'),
+('If you want to live a happy life, tie it to a goal, not to people or things.', 'Albert Einstein', 'Wisdom'),
+('In the middle of difficulty lies opportunity.', 'Albert Einstein', 'Inspiration'),
+('The only limit to our realization of tomorrow will be our doubts of today.', 'Franklin D. Roosevelt', 'Courage'),
+('Act as if what you do makes a difference. It does.', 'William James', 'Motivation');

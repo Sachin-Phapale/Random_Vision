@@ -1,0 +1,38 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:random_vision;MODE=MySQL;DB_CLOSE_DELAY=-1}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+  mail:
+    host: ${SPRING_MAIL_HOST:localhost}
+    port: ${SPRING_MAIL_PORT:1025}
+    username: ${SPRING_MAIL_USERNAME:}
+    password: ${SPRING_MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+app:
+  jwtSecret: ${JWT_SECRET:5J2k9sD2j8sK8sL2mNsPqWzX1c2v3b4n5m6q7w8e9r0tYUIOPAsDfGhJkLzXc}
+  jwtExpirationMs: ${JWT_EXPIRATION_MS:3600000} # 1 hour
+  jwtRefreshExpirationMs: ${JWT_REFRESH_EXPIRATION_MS:864000000} # 10 days
+  uploadDir: ${UPLOAD_DIR:./uploads}
