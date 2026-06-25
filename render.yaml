@@ -42,9 +42,9 @@ services:
   # 2. Frontend Static Site (Builds Vite output and serves it)
   - type: web
     name: mail-agent-frontend
-    env: static
+    runtime: static
     buildCommand: npm install && npm run build
-    publishPath: dist
+    staticPublishPath: dist
     plan: free
     rootDir: frontend
     envVars:
