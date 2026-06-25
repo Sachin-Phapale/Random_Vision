@@ -34,10 +34,6 @@ services:
         sync: false # Set in Render Dashboard
       - key: SPRING_MAIL_PASSWORD
         sync: false # Set in Render Dashboard
-    disk:
-      name: uploads-data
-      mountPath: /var/data/uploads
-      sizeGB: 1
 
   # 2. Frontend Static Site (Builds Vite output and serves it)
   - type: web
@@ -49,10 +45,7 @@ services:
     rootDir: frontend
     envVars:
       - key: VITE_API_URL
-        fromService:
-          type: web
-          name: mail-agent-backend
-          property: url
+        value: https://mail-agent-backend.onrender.com # Update this in Render Dashboard if your backend URL differs
 
 # 3. PostgreSQL Managed Database
 databases:
