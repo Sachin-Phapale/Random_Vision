@@ -1,0 +1,62 @@
+services:
+  # 1. Backend Web Service (Docker deployment)
+  - type: web
+    name: mail-agent-backend
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: mail-agent-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: mail-agent-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: mail-agent-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRATION_MS
+        value: 3600000
+      - key: JWT_REFRESH_EXPIRATION_MS
+        value: 864000000
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+      - key: SPRING_MAIL_HOST
+        value: smtp.gmail.com # Replace with your real SMTP host
+      - key: SPRING_MAIL_PORT
+        value: 587
+      - key: SPRING_MAIL_USERNAME
+        sync: false # Set in Render Dashboard
+      - key: SPRING_MAIL_PASSWORD
+        sync: false # Set in Render Dashboard
+    disk:
+      name: uploads-data
+      mountPath: /var/data/uploads
+      sizeGB: 1
+
+  # 2. Frontend Static Site (Builds Vite output and serves it)
+  - type: web
+    name: mail-agent-frontend
+    env: static
+    buildCommand: npm install && npm run build
+    publishPath: dist
+    plan: free
+    rootDir: frontend
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: mail-agent-backend
+          property: url
+
+# 3. PostgreSQL Managed Database
+databases:
+  - name: mail-agent-db
+    databaseName: random_vision
+    user: rv_user
+    plan: free

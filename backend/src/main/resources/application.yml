@@ -3,14 +3,10 @@ spring:
     url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:random_vision;MODE=MySQL;DB_CLOSE_DELAY=-1}
     username: ${SPRING_DATASOURCE_USERNAME:sa}
     password: ${SPRING_DATASOURCE_PASSWORD:}
-    driver-class-name: org.h2.Driver
   jpa:
     hibernate:
       ddl-auto: validate
     show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
   flyway:
     enabled: true
     baseline-on-migrate: true

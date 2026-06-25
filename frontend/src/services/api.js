@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -35,7 +37,7 @@ api.interceptors.response.use(
         }
         
         // Call refresh endpoint using fresh axios request to avoid looping
-        const response = await axios.post('/api/auth/refresh', { refreshToken });
+        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
         const { accessToken, refreshToken: newRefreshToken } = response.data;
         
         localStorage.setItem('token', accessToken);
