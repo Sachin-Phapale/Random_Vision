@@ -8,15 +8,15 @@ services:
     envVars:
       - key: SPRING_DATASOURCE_URL
         fromDatabase:
-          name: mail-agent-db
+          name: random-vision-db
           property: connectionString
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
-          name: mail-agent-db
+          name: random-vision-db
           property: user
       - key: SPRING_DATASOURCE_PASSWORD
         fromDatabase:
-          name: mail-agent-db
+          name: random-vision-db
           property: password
       - key: JWT_SECRET
         generateValue: true
@@ -48,7 +48,7 @@ services:
 
 # 3. PostgreSQL Managed Database
 databases:
-  - name: mail-agent-db
+  - name: random-vision-db
     databaseName: random_vision
     user: rv_user
     plan: free
