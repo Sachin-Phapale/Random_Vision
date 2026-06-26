@@ -7,17 +7,11 @@ services:
     plan: free
     envVars:
       - key: SPRING_DATASOURCE_URL
-        fromDatabase:
-          name: random-vision-db
-          property: connectionString
+        sync: false # Enter your existing database JDBC URL (e.g., jdbc:postgresql://random-vision-db:5432/random_vision)
       - key: SPRING_DATASOURCE_USERNAME
-        fromDatabase:
-          name: random-vision-db
-          property: user
+        sync: false # Enter your existing database username (e.g., rv_user)
       - key: SPRING_DATASOURCE_PASSWORD
-        fromDatabase:
-          name: random-vision-db
-          property: password
+        sync: false # Enter your existing database password
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRATION_MS
@@ -46,9 +40,4 @@ services:
       - key: VITE_API_URL
         value: https://mail-agent-backend.onrender.com # Update this in Render Dashboard if your backend URL differs
 
-# 3. PostgreSQL Managed Database
-databases:
-  - name: random-vision-db
-    databaseName: random_vision
-    user: rv_user
-    plan: free
+
