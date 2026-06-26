@@ -3,7 +3,7 @@ services:
   - type: web
     name: mail-agent-backend
     env: docker
-    dockerfilePath: backend/Dockerfile
+    dockerfilePath: Dockerfile
     plan: free
     rootDir: backend
     envVars:
