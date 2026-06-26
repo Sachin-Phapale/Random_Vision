@@ -5,6 +5,7 @@ services:
     env: docker
     dockerfilePath: backend/Dockerfile
     plan: free
+    rootDir: backend
     envVars:
       - key: SPRING_DATASOURCE_URL
         sync: false # Enter your existing database JDBC URL (e.g., jdbc:postgresql://random-vision-db:5432/random_vision)
